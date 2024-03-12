@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from scipy.ndimage import zoom
 
 
@@ -87,25 +88,33 @@ def get_main_matrix(sc_matrices, mode="diag"):
     return np.concatenate(row_matrices, axis=0)
 
 
-def matrix_plot(matrix, file_name, grid_frames=None):
+def matrix_plot(matrix, file_name, grid_frames=None, highlight_diag=True):
     """
     The function visualises the scHi-C matrix and saves the result to the file_name.
     :param matrix: 2D numpy array representing the scHi-C matrix to visualise
     :param file_name: path to the output image
     :param grid_frames: If not None, integer value indicates the number of sub matrices to pint out on the plot.
+    :param highlight_diag: Boolean. whether the diagonal scHi-C maps are to be highlighted.
+    Only works if grid_frames is not None.
     :return: None
     """
-
-    plt.imshow(matrix, cmap='binary', interpolation='nearest')
+    fig, ax = plt.subplots()
+    ax.imshow(matrix, cmap='binary', interpolation='nearest')
     if grid_frames is not None:
         n = int(matrix.shape[0]/grid_frames)
         for i in range(1, grid_frames):
-            plt.axvline(n * i - 0.5)
-            plt.axhline(n * i - 0.5)
+            ax.axvline(n * i - 0.5, zorder=1)
+            ax.axhline(n * i - 0.5, zorder=1)
+        if highlight_diag:
+            for i in range(grid_frames):
+                rect = patches.Rectangle((n * i - 0.5, n * i - 0.5), n, n,
+                                         linewidth=2, edgecolor='r', facecolor='none', zorder=2)
+                ax.add_patch(rect)
 
-    plt.xticks([])
-    plt.yticks([])
+    ax.set_xticks([])
+    ax.set_yticks([])
     plt.savefig(file_name)
+    plt.close()
 
 
 def resize_matrix(matrix, new_size):
