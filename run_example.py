@@ -15,9 +15,9 @@ if __name__ == "__main__":
     path = "./test.png"
 
     n = 3
-    size = 100
-    matrices = [get_random_schic(size, 2000) for i in range(n)]
-    matrix = get_main_matrix(matrices, "random")
+    size = 10
+    matrices = [get_random_schic(size, size*2) for i in range(n)]
+    matrix = get_main_matrix(matrices, "interp")
     matrix_plot(matrix, path)
 
     start_time = time.time()
@@ -30,14 +30,12 @@ if __name__ == "__main__":
     end_time = time.time()
     print("Elapsed time of finding shortest paths:", round(end_time - start_time, 2), "seconds")
 
-    # matrix_plot(paths, path)
-
-    start_time = time.time()
-    model = get_mds_model(paths)
-    end_time = time.time()
-    print("Elapsed time of fitting MDS model:", round(end_time - start_time, 2), "seconds")
-
-    print(model.shape)
-    for i in range(n):
-        save_points_as_pdb(model[size*i:size*(i+1), :], "results/test00/test_{}.pdb".format(str(i).zfill(2)))
+    # start_time = time.time()
+    # model = get_mds_model(paths)
+    # end_time = time.time()
+    # print("Elapsed time of fitting MDS model:", round(end_time - start_time, 2), "seconds")
+    #
+    # print(model.shape)
+    # for i in range(n):
+    #     save_points_as_pdb(model[size*i:size*(i+1), :], "results/test00/test_{}.pdb".format(str(i).zfill(2)))
 

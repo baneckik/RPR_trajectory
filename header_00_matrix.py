@@ -22,34 +22,68 @@ def get_random_schic(size, contacts):
     return matrix
 
 
+def get_interp_matrix(matrix1, matrix2):
+    """
+    Calculates the interpolation scHi-C matrix from two input scHi-C matrices.
+    :param matrix1: 2D numpy array
+    :param matrix2: 2D numpy array
+    :return: 2D numpy array
+    """
+    n = matrix1.shape[0]
+    new_matrix = np.zeros((n, n))
+    for i in range(n):
+        for j in range(i, n):
+            if matrix1[i, j] > 0 and matrix2[i, j] > 0:
+                new_matrix[i, j] = 1
+                new_matrix[j, i] = 1
+            elif matrix1[i, j] > 0 or matrix2[i, j] > 0:
+                new_matrix[i, j] = np.random.randint(2)
+                new_matrix[j, i] = new_matrix[i, j]
+    return new_matrix
+
+
 def get_main_matrix(sc_matrices, mode="diag"):
     """
-    Function creates a matrix from a list of ordered sc_matrices.
+    Function creates a main matrix from a list of ordered sc_matrices.
     :param sc_matrices: Ordered list or tuple of the 2D numpy arrays of the same size
-    :param mode: either "diag" or "random". Specifies how the trans matrices are going to be created.
+    :param mode: either "interp", "diag" or "random". Specifies how the trans matrices are going to be created.
     :return: 2D numpy array
     """
     n = len(sc_matrices)
     size = sc_matrices[0].shape[0]
-    contacts = np.sum(sc_matrices[0])/4
+    contacts = np.sum(sc_matrices[0])
     row_matrices = []
-    for i in range(n):
-        if mode == "random":
+
+    if mode == "random":
+        for i in range(n):
             row_matrices.append(np.concatenate(
-                [np.zeros((size, size)) for j in range(i-1)] +
+                [np.zeros((size, size)) for j in range(i - 1)] +
                 [get_random_schic(size, contacts) for j in range(int(i != 0))] +
                 [sc_matrices[i]] +
-                [get_random_schic(size, contacts) for j in range(int(i != n-1))] +
+                [get_random_schic(size, contacts) for j in range(int(i != n - 1))] +
                 [np.zeros((size, size)) for j in range(n - i - 2)], axis=1))
-        elif mode == "diag":
+    elif mode == "diag":
+        for i in range(n):
             row_matrices.append(np.concatenate(
                 [np.zeros((size, size)) for j in range(i - 1)] +
                 [np.eye(size) for j in range(int(i != 0))] +
                 [sc_matrices[i]] +
                 [np.eye(size) for j in range(int(i != n - 1))] +
                 [np.zeros((size, size)) for j in range(n - i - 2)], axis=1))
-        else:
-            raise (Exception("Incorrect mode: {}. Must be either diag or random.".format(mode)))
+    elif mode == "interp":
+        row_matrices = [[np.eye(1) for i in range(n)] for j in range(n)]
+        for i in range(n):
+            row_matrices[i][i] = sc_matrices[i]
+
+        for diag in range(n - 1):
+            for j in range(n - diag - 1):
+                row_matrices[j][diag + j + 1] = get_interp_matrix(row_matrices[j][diag + j],
+                                                                  row_matrices[j + 1][diag + j + 1])
+                row_matrices[diag + j + 1][j] = row_matrices[j][diag + j + 1]
+        row_matrices = [np.concatenate(row, axis=1) for row in row_matrices]
+    else:
+        raise (Exception("Incorrect mode: {}. Must be either diag or random.".format(mode)))
+
     return np.concatenate(row_matrices, axis=0)
 
 
