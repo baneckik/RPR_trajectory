@@ -5,7 +5,7 @@ from scipy.ndimage import zoom
 
 def get_random_schic(size, contacts):
     """
-    Creates a random imitataion of a scHi-C
+    Creates a random imitation of a scHi-C
     :param size: Integer. Size of a given matrix
     :param contacts: Integer. Approximate number of contacts in the upper part of the matrix
     :return: 2D numpy array
@@ -87,14 +87,22 @@ def get_main_matrix(sc_matrices, mode="diag"):
     return np.concatenate(row_matrices, axis=0)
 
 
-def matrix_plot(matrix, file_name):
+def matrix_plot(matrix, file_name, grid_frames=None):
     """
     The function visualises the scHi-C matrix and saves the result to the file_name.
     :param matrix: 2D numpy array representing the scHi-C matrix to visualise
     :param file_name: path to the output image
+    :param grid_frames: If not None, integer value indicates the number of sub matrices to pint out on the plot.
     :return: None
     """
+
     plt.imshow(matrix, cmap='binary', interpolation='nearest')
+    if grid_frames is not None:
+        n = int(matrix.shape[0]/grid_frames)
+        for i in range(1, grid_frames):
+            plt.axvline(n * i - 0.5)
+            plt.axhline(n * i - 0.5)
+
     plt.xticks([])
     plt.yticks([])
     plt.savefig(file_name)
