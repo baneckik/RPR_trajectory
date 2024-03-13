@@ -37,6 +37,13 @@ def get_graph_from_main_matrix(main_matrix):
 
 
 def get_shortest_paths(graph):
+    # n = graph.number_of_nodes()
+    # lengths_dict = dict(nx.all_pairs_dijkstra_path_length(graph, weight='weight'))
+    # dist_matrix = np.zeros((n, n))
+    # for i in range(n):
+    #     for j in range(n):
+    #         dist_matrix[i, j] = lengths_dict[i][j]
+    # return np.array(lengths_dict)
     return nx.floyd_warshall_numpy(graph, weight='weight')
 
 

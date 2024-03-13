@@ -5,8 +5,8 @@ from points_io import save_points_as_pdb
 
 
 if __name__ == "__main__":
-    n = 6
-    size = 30
+    n = 10
+    size = 40
 
     start_time = time.time()
     matrices = [get_random_schic(size, size**2) for i in range(n)]
@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
     start_time = time.time()
     paths = get_shortest_paths(graph)
+    print(paths)
     matrix_plot(paths, "./test_dist.png", grid_frames=n)
     end_time = time.time()
     print("Elapsed time of finding shortest paths:", round(end_time - start_time, 2), "seconds")
