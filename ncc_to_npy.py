@@ -28,10 +28,11 @@ def ncc_to_npy(path, chrom, size=100, binary=True):
 
 if __name__ == "__main__":
     ncc_path = "./examples"
-    chrom = "chr1"
+    chrom = "chr2"
     size = 200
 
     files = os.listdir(ncc_path)
+    files = [file for file in files if file.endswith(".ncc")]
     for file in files:
         file_path = os.path.join(ncc_path, file)
         path_out = file_path[:-4] + "_{}.npy".format(chrom)

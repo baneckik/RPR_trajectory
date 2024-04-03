@@ -6,11 +6,12 @@ from points_io import save_points_as_pdb
 import os
 
 
-def run_simulation(matrices_path, output_folder, random=False, n=4, size=50):
+def run_simulation(matrices_path, output_folder, chrom="chr1", random=False, n=4, size=50):
     """
     Runs the RPR trajectory simulation.
     :param matrices_path: The folder of the matrices (if random=False)
     :param output_folder: The folder to store the simulation results.
+    :param chrom: Chromosome to simulate.
     :param random: If True random scHi-C matrices are generates. If False matrices from matrices_path are used.
     :param n: Number of scHi-C matrices. Ignored if random=False.
     :param size: Size of the scHi-C matrices.
@@ -25,7 +26,7 @@ def run_simulation(matrices_path, output_folder, random=False, n=4, size=50):
         matrices = [get_random_schic(size, size ** 2) for i in range(n)]
     else:
         files = os.listdir(matrices_path)
-        files = [file for file in files if file.endswith("_chr1.npy")]
+        files = [file for file in files if file.endswith(f"_{chrom}.npy")]
         files.sort()
         matrices = [np.load(os.path.join(matrices_path, file)) for file in files]
     size = matrices[0].shape[0]
@@ -73,5 +74,5 @@ if __name__ == "__main__":
     #     random=True, n=5, size=50)
 
     main_matrix, main_graph, distance_matrix, frame_models = run_simulation(
-        "examples", "results/test02",
-        random=False, n=3, size=50)
+        "examples", "results/test03",
+        chrom="chr2", random=False, n=3, size=50)
