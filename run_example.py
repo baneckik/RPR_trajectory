@@ -1,5 +1,6 @@
 from header_00_matrix import *
 from header_01_graph import *
+from header_02_diagnostics import plot_shepard
 import time
 from points_io import save_points_as_pdb
 import os
@@ -49,6 +50,7 @@ def run_simulation(matrices_path, output_folder, random=False, n=4, size=50):
 
     start_time = time.time()
     model = get_mds_model(paths)
+    models = [model[size * i:size * (i + 1), :] for i in range(n)]
     end_time = time.time()
     print("Elapsed time of fitting MDS model:", round(end_time - start_time, 2), "seconds")
 
@@ -56,15 +58,17 @@ def run_simulation(matrices_path, output_folder, random=False, n=4, size=50):
     if not os.path.exists(frames_path):
         os.makedirs(frames_path)
     for i in range(n):
-        save_points_as_pdb(model[size * i:size * (i + 1), :],
+        save_points_as_pdb(models[i],
                            os.path.join(frames_path, "frame_{}.pdb".format(str(i).zfill(2))))
 
-    return matrix, graph, paths, model
+    plot_shepard(paths, models, os.path.join(output_folder, "plot_shepard.png"))
+
+    return matrix, graph, paths, models
 
 
 if __name__ == "__main__":
 
-    main_matrix, main_graph, distance_matrix, models = run_simulation(
+    main_matrix, main_graph, distance_matrix, frame_models = run_simulation(
         "examples", "results/test01",
-        random=True, n=5, size=100)
+        random=True, n=3, size=50)
 
