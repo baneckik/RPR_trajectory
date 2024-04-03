@@ -68,7 +68,10 @@ def run_simulation(matrices_path, output_folder, random=False, n=4, size=50):
 
 if __name__ == "__main__":
 
-    main_matrix, main_graph, distance_matrix, frame_models = run_simulation(
-        "examples", "results/test01",
-        random=True, n=3, size=50)
+    # main_matrix, main_graph, distance_matrix, frame_models = run_simulation(
+    #     "examples", "results/test01",
+    #     random=True, n=5, size=50)
 
+    main_matrix, main_graph, distance_matrix, frame_models = run_simulation(
+        "examples", "results/test02",
+        random=False, n=3, size=50)

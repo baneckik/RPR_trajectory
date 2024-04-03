@@ -15,13 +15,9 @@ def plot_shepard(pre_dist_mat, models, output_file):
     """
     model = np.vstack(models)
     post_dist_mat = distance_matrix(model, model)
-    n = len(models)
     size = models[0].shape[0]
 
     fig, ax = plt.subplots(1, 3, figsize=(15, 5))
-
-    # dist_pre = pre_dist_mat.flatten()
-    # dist_post = post_dist_mat.flatten()
 
     dist_pre, dist_post, cis_trans = [], [], []
     for i in range(model.shape[0]):
@@ -38,8 +34,8 @@ def plot_shepard(pre_dist_mat, models, output_file):
 
     plot0 = ax[0].scatter(dist_pre, dist_post, s=0.1, c=cis_trans, cmap="bwr")
     ax[0].legend(handles=plot0.legend_elements()[0], labels=["cis", "trans"])
-    sns.kdeplot(df, x="pre", y="post", cmap="Blues", fill=True, thresh=0, levels=10, ax=ax[1])
-    sns.kdeplot(df[["pre", "post"]], fill=True, thresh=0, levels=10, ax=ax[2], legend=False)
+    sns.kdeplot(df.sample(200), x="pre", y="post", cmap="Blues", fill=True, thresh=0, levels=10, ax=ax[1])
+    sns.kdeplot(df[["post", "pre"]], fill=True, thresh=0, levels=10, ax=ax[2], legend=False)
     ax[0].set_xlabel('Graph distances before MDS')
     ax[0].set_ylabel('Euclidean distances after MDS')
     ax[1].set_xlabel('Graph distances before MDS')
