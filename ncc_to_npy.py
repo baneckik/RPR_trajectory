@@ -5,7 +5,8 @@ from header_00_matrix import matrix_plot
 
 
 def ncc_to_npy(path, chrom, size=100, binary=True):
-    df = pd.read_csv(path, header=None, sep=" ")
+    df = pd.read_csv(path, header=None, sep="\t")
+    print(path, df.shape)
     df = df[[0, 2, 6, 8]]
     df.columns = ["chr1", "pos1", "chr2", "pos2"]
     df = df[(df.chr1 == chrom) & (df.chr2 == chrom)]
@@ -27,17 +28,20 @@ def ncc_to_npy(path, chrom, size=100, binary=True):
 
 
 if __name__ == "__main__":
-    ncc_path = "./examples"
-    chrom = "chr2"
+    main_path = "./examples/one_patski"
+    chrom = "chr7-M"
     size = 200
+
+    ncc_path = main_path + "/ncc"
+    npy_path = main_path + "/npy"
 
     files = os.listdir(ncc_path)
     files = [file for file in files if file.endswith(".ncc")]
     for file in files:
         file_path = os.path.join(ncc_path, file)
-        path_out = file_path[:-4] + "_{}.npy".format(chrom)
-        hic_array = ncc_to_npy(file_path, chrom, size)
-        matrix_plot(hic_array, "./test_schic.png")
+        path_out = os.path.join(npy_path, file[:-4] + "_{}.npy".format(chrom))
+        hic_array = ncc_to_npy(file_path, chrom, size, binary=False)
+        matrix_plot(hic_array, os.path.join(main_path, "test_schic.png"))
         np.save(path_out, hic_array)
 
 
