@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import os
 from header_00_matrix import matrix_plot
+from tqdm import tqdm
 
 
 def ncc_to_npy(path, chrom, size=100, binary=True):
     df = pd.read_csv(path, header=None, sep="\t")
-    print(path, df.shape)
     df = df[[0, 2, 6, 8]]
     df.columns = ["chr1", "pos1", "chr2", "pos2"]
     df = df[(df.chr1 == chrom) & (df.chr2 == chrom)]
@@ -28,9 +28,11 @@ def ncc_to_npy(path, chrom, size=100, binary=True):
 
 
 def ncc_folder_to_npy(input_folder, output_folder, chrom, size, png_folder=None):
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
     files = os.listdir(input_folder)
     files = [file for file in files if file.endswith(".ncc")]
-    for file in files:
+    for file in tqdm(files):
         file_path = os.path.join(input_folder, file)
         path_out = os.path.join(output_folder, file[:-4] + "_{}.npy".format(chrom))
         hic_array = ncc_to_npy(file_path, chrom, size, binary=False)
@@ -40,11 +42,11 @@ def ncc_folder_to_npy(input_folder, output_folder, chrom, size, png_folder=None)
 
 
 if __name__ == "__main__":
-    main_path = "./examples/one_patski"
-    chromosome = "chr7-M"
+    main_path = "./examples/k562"
+    chromosome = "chr7"
     matrix_size = 200
 
     ncc_path = main_path + "/ncc"
-    npy_path = main_path + "/npy"
+    npy_path = main_path + "_".join(["/npy", chromosome, str(matrix_size).zfill(4)])
 
     ncc_folder_to_npy(ncc_path, npy_path, chromosome, matrix_size, main_path)
