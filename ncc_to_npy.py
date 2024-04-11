@@ -3,6 +3,8 @@ import pandas as pd
 import os
 from header_00_matrix import matrix_plot
 from tqdm import tqdm
+from header_02_diagnostics import plot_trend_matrix
+import multiprocessing as mp
 
 
 def ncc_to_npy(path, chrom, size=100, binary=True):
@@ -41,12 +43,42 @@ def ncc_folder_to_npy(input_folder, output_folder, chrom, size, png_folder=None)
         np.save(path_out, hic_array)
 
 
+def parse_chroms(args):
+    chroms, resolutions = args
+    for chrom in chroms:
+        for matrix_size in resolutions:
+            main_path = "./examples/k562"
+            chromosome = "chr" + str(chrom)
+
+            ncc_path = main_path + "/ncc"
+            npy_path = main_path + "_".join(["/npy", chromosome, str(matrix_size).zfill(4)])
+
+            ncc_folder_to_npy(ncc_path, npy_path, chromosome, matrix_size, main_path)
+
+            path = "./examples/k562/npy_{}_{}".format(chromosome, str(matrix_size).zfill(4))
+            plot_trend_matrix(path)
+
+
 if __name__ == "__main__":
-    main_path = "./examples/k562"
-    chromosome = "chr7"
-    matrix_size = 200
+    # main_path = "./examples/k562"
+    # chromosome = "chr2"
+    # matrix_size = 50
+    #
+    # ncc_path = main_path + "/ncc"
+    # npy_path = main_path + "_".join(["/npy", chromosome, str(matrix_size).zfill(4)])
+    #
+    # ncc_folder_to_npy(ncc_path, npy_path, chromosome, matrix_size, main_path)
 
-    ncc_path = main_path + "/ncc"
-    npy_path = main_path + "_".join(["/npy", chromosome, str(matrix_size).zfill(4)])
+    chroms = list(range(1, 23))+["X"]
+    resolutions = [50, 100]
 
-    ncc_folder_to_npy(ncc_path, npy_path, chromosome, matrix_size, main_path)
+    threads = 22
+    task_list = [(chroms_thread, resolutions)
+                 for chroms_thread in np.array_split(chroms, threads)]
+
+    pool = mp.Pool(threads)
+    results = pool.map(parse_chroms, task_list)
+    pool.close()
+    pool.join()
+
+
